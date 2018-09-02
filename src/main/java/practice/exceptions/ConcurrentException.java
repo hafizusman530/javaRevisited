@@ -1,14 +1,25 @@
 package practice.exceptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConcurrentException {
     private static final HashMap<String, String> ages;
+    private static final List<String> agesList;
+
     static {
         ages = new HashMap<String, String>() {{
             put("usman", "25");
             put("Ali", "24");
             put("Naveed", "23");
+        }};
+        agesList = new ArrayList<String>() {{
+            add("23");
+            add("24");
+            add("26");
+            add("25");
         }};
     }
 
@@ -18,15 +29,28 @@ public class ConcurrentException {
     }
 
     private void run() {
-        produceConcurrentExceptionInSingleThread();
+        produceConcurrentExceptionInSingleThread(agesList);
+        fixConcurrentExceptionInSingleThread(agesList);
     }
 
-    private void produceConcurrentExceptionInSingleThread() {
+    private void fixConcurrentExceptionInSingleThread(List<String> ages) {
+        System.out.println("Ages Before Delete 25");
+        printList(ages);
+        System.out.println("Ages After Delete 25");
+        printList(ages.stream().filter(age -> !age.equals("25")).collect(Collectors.toList()));
+    }
 
-        for (String key : ages.keySet()) {
-            if (key.equals("usman")) {
-                ages.remove(key);
+    private void printList(List<String> ages) {
+        ages.forEach(System.out::println);
+    }
+
+    private void produceConcurrentExceptionInSingleThread(List<String> ages) {
+
+        for (String age : ages) {
+            if (age.equals("25")) {
+                ages.remove(age);
             }
         }
     }
+
 }
